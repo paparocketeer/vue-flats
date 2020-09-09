@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import entities from "@/entities.json";
 import Flat from "@/components/Flat";
 import Spinner from "@/components/Spinner";
 export default {
@@ -35,15 +34,22 @@ export default {
       loading: true,
     };
   },
-  mounted() {
+  created() {
+    // fetching favs from localstorage
     let favs = localStorage["favs"] ? JSON.parse(localStorage["favs"]) : [];
-    entities.forEach((flat) => {
-      if (favs.includes(flat.id)) {
-        flat.fav = true;
-      }
-      this.flats.push(flat);
-    });
+    // fetching flats from fake api and setting favs on them while putting inside data object
+    fetch(process.env.VUE_APP_ROOT_API)
+      .then((resp) => resp.json())
+      .then((json) => {
+        json.forEach((flat) => {
+          if (favs.includes(flat.id)) {
+            flat.fav = true;
+          }
+          this.flats.push(flat);
+        });
+      });
 
+    // fake fetching time
     setTimeout(() => {
       this.loading = false;
     }, 600);
